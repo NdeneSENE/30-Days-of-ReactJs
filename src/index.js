@@ -1,149 +1,56 @@
 import React from "react";
 import ReactDom from "react-dom";
 
-// const Header = (props) => {
-//   return <h1>Hello {props.user}</h1>;
-// };
-
-// function Layout(props) {
-//   return <div style={{ background: "palegoldenrod" }}>
-//     {props.children}
-//   </div>;
-// }
-
-// class Header extends React.Component {
-//   render() {
-//     return <h1>Hello React</h1>;
-//   }
-// }
-
-// function Login() {
-//   return <h1>Please Login!</h1>;
-// }
-
-// function Logout() {
-//   return <button>Se Deconnecter</button>;
-// }
-
-const rootNode = document.getElementById("root");
-
-// const isAuth = true;
+const baseUrl = "https://api.github.com/users/";
 
 function App() {
-  //   return (<Layout>
-  //     {isAuth
-  //       ? (
-  //         <>
-  //           <Header user="Ndene SENE" />
-  //           <Logout />
-  //         </>
-  //       )
-  //       : <Login />}
-  //     {/* {isAuth && <Logout />} */}
-  //     <footer>Ndene SENE 2020</footer>
-  //   </Layout>);
+  const [username, setUsername] = React.useState("NdeneSENE");
+  const [user, setUser] = React.useState(null);
+  const searchInput = React.useRef();
 
-  // const people = ["Joe", "ndene", "moussa"];
-  // return (
-  //   <ul>
-  //     {people.map((person, index) => <Person key={index} person={person} />)}
-  //     <input onChange={handleInput} />
-  //   </ul>
-  // );
-
-  const [developer, setDeveloper] = React.useState({
-    langage: "Python",
-    yearExperience: 0,
-    isEmployed: false,
-    name: "",
-  });
-
-  // const [langage, setlangage] = React.useState("python");
-  // const [yearExperience, setYearExperience] = React.useState(0);
-
+  async function getUser() {
+    const response = await fetch(`${baseUrl}${username}`);
+    const data = await response.json();
+    setUser(data);
+  }
+  function handleClearInput() {
+    searchInput.current.value = "";
+    searchInput.current.focus();
+  }
   React.useEffect(() => {
-    document.title = developer.name;
-    console.log("runs");
-  }, [developer.name]);
+    getUser();
 
-  //const inputValue = inputState[0];
-  //const setInputValue = inputState[1];
-  // function handleInput(event) {
-  //   setInputValue(event.target.value);
-  // }
-
-  function handleChangeLangage() {
-    setDeveloper({
-      langage: "javascript",
-      yearExperience: 0,
-    });
-  }
-
-  function handleChangeYearExperience(event) {
-    setDeveloper({
-      ...developer,
-      yearExperience: event.target.value,
-    });
-  }
-  function handleToggleEmployment() {
-    setDeveloper((prevState) => ({
-      ...prevState,
-      isEmployed: !prevState.isEmployed,
-    }));
-  }
-
-  function handleChangeName(event) {
-    setDeveloper({
-      ...developer,
-      name: event.target.value,
-    });
-  }
+    // fetch(endpoint)
+    //   .then((response) => response.json())
+    //   .then((data) => setUser(data));
+  }, []);
 
   return (
     <div>
-      <div>
-        <button onClick={handleToggleEmployment}>
-          Toggle Employment Status
-        </button>
-      </div>
-      <div>
-        <input
-          type="number"
-          onChange={handleChangeYearExperience}
-        />
-      </div>
-      <div>
-        <input
-          type="text"
-          placeholder="Votre nom"
-          onChange={handleChangeName}
-        />
-      </div>
-      <button
-        onClick={handleChangeLangage}
-      >
-        Change Langage
-      </button>
-      <p>
-        Je suis entrain d'apprendre {developer.langage} et j'ai {developer
-          .yearExperience}
-        ans d'expérience.
-      </p>
-
-      <p>
-        Employment Status: {developer.isEmployed ? "Employed" : "Unemployed"}
-      </p>
+      <input
+        type="text"
+        placeholder="Username"
+        onChange={(event) => setUsername(event.target.value)}
+        ref={searchInput}
+      />
+      <button onClick={getUser}>Search</button>
+      <button onClick={handleClearInput}>Clear</button>
+      {user
+        ? (
+          <div>
+            <h1>{user.name}</h1>
+            <p>{user.bio}</p>
+            <img alt="avatar" src={user.avatar_url} style={{ height: 50 }} />
+          </div>
+        )
+        : (
+          <p>Loading...</p>
+        )}
     </div>
   );
 }
 
-// function Person(props) {
-//   function handlePersonClick(event) {
-//     alert(props.person);
-//     console.log(event);
-//   }
-//   return <li onClick={handlePersonClick}>{props.person}</li>;
-// }
+const rootNode = document.getElementById("root");
 
 ReactDom.render(
   <App />,
